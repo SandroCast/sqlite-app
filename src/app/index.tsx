@@ -1,10 +1,37 @@
-import { Text, View } from "react-native"
+import { Input } from "@/components/input"
+import { useProductDatabase } from "@/database/useProductDatabase";
+import { useState } from "react"
+import { View, Button, Alert } from "react-native"
 
 export default function index() {
-    return <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>
-            Teste
-        </Text>
+    const [id, setId] = useState("");
+    const [name, setName] = useState("");
+    const [quantity, setQuantity] = useState("");
+    const [products, setProducts] = useState([]);
+
+    const productDatabase = useProductDatabase();
+
+    async function create(){
+        try {
+
+            if(isNaN(Number(quantity))){
+                return Alert.alert("Quantidade", "A quantidade precisa ser um número!")
+            }
+
+            const response = await productDatabase.create({ name, quantity: Number(quantity) });
+            
+            Alert.alert("Produto cadastrado com o ID: " + response.insertedRowId)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    return <View style={{ flex: 1, justifyContent: "center", padding: 32, gap: 16 }}>
+        
+        <Input placeholder="Nome" onChangeText={setName} value={name} />
+        <Input placeholder="Quantidade" onChangeText={setQuantity} value={quantity} />
+        <Button title="Salvar" onPress={create}/>
 
     </View>
     
